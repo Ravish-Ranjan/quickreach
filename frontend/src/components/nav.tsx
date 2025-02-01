@@ -1,5 +1,5 @@
 import { Link } from "lucide-react";
-import H4 from "./H4";
+import { H4 } from "@/components/Typography";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import ModeToggle from "./mode-toggle";
@@ -9,22 +9,22 @@ import { useNavigate } from "react-router-dom";
 function Nav() {
 	const navigate = useNavigate();
 	return (
-		<div className="w-full flex justify-between items-center h-12 p-4">
+		<div className="flex items-center justify-between w-full h-16 gap-4 p-4">
 			<div
-				className="flex gap-2 items-center cursor-pointer"
+				className="flex items-center gap-2 cursor-pointer"
 				onClick={() => navigate("/")}
 				title="go to homepage"
 			>
 				<Link strokeWidth={2} />
 				<H4>QuickReach</H4>
 			</div>
-			<div className="flex gap-2 items-center">
-				<ModeToggle/>
+			<div className="flex items-center gap-2">
+				<ModeToggle />
 				<SignedIn>
 					<Button
 						variant="link"
 						onClick={() => navigate("/dashboard")}
-						className="p-1"
+						className="hidden p-1 sm:grid"
 					>
 						Dashboard
 					</Button>
@@ -33,7 +33,9 @@ function Nav() {
 					</Button>
 				</SignedIn>
 				<SignedOut>
-					<SignInButton />
+					<SignInButton>
+						<Button variant="outline">Sign In</Button>
+					</SignInButton>
 				</SignedOut>
 			</div>
 		</div>

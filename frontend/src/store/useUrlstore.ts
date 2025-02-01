@@ -3,8 +3,25 @@ import axiosIns from "@/lib/axios";
 import { isAxiosError } from "axios";
 import { toast } from "@/hooks/use-toast";
 
+interface urlProps {
+	_id: string;
+	original_url: string;
+	short_url: string;
+	createdAt: string;
+	updatedAt: string;
+	clicks: number;
+	owner: string;
+}
+
+interface myUrlsProps {
+	currentPage: number;
+	totalPages: number;
+	totalCount: number;
+	urls: urlProps[];
+}
+
 interface urlstoreProps {
-	myUrls: null;
+	myUrls: myUrlsProps;
 	userid: null | undefined | string;
 	isGettingMyUrls: boolean;
 	isGettingAnalytics: boolean;
@@ -18,7 +35,7 @@ interface urlstoreProps {
 }
 
 export default create<urlstoreProps>((set, get) => ({
-	myUrls: null,
+	myUrls: { currentPage: 0, totalPages: 0, totalCount: 0, urls: [] },
 	userid: null,
 	analytics: null,
 	isGettingMyUrls: false,
@@ -84,7 +101,7 @@ export default create<urlstoreProps>((set, get) => ({
 	addUrl: async (original_url: string) => {
 		try {
 			set({ isAddingUrl: true });
-			await axiosIns.post(
+			const res = await axiosIns.post(
 				"/url/new",
 				{
 					original_url,
@@ -95,6 +112,30 @@ export default create<urlstoreProps>((set, get) => ({
 					},
 				}
 			);
+			const prev = get().myUrls;
+			const newD = {
+				...prev,
+				urls: [
+					{
+						_id: res.data._id,
+						original_url: res.data.original_url,
+						short_url: res.data.short_url,
+						createdAt: res.data.createdAt,
+						updatedAt: res.data.updatedAt,
+						clicks: res.data.clicks,
+						owner: res.data.owner,
+					},
+					...(prev?.urls || []),
+				],
+				totalCount: prev?.totalCount ? prev.totalCount + 1 : 1,
+				totalPages: Math.ceil((prev?.totalCount + 1 || 0) / 10),
+			};
+			set({ myUrls: newD });
+			toast({
+				title: "Url created",
+				description: res.data.message,
+				variant: "default",
+			});
 		} catch (error) {
 			if (isAxiosError(error)) {
 				console.log(
@@ -116,10 +157,22 @@ export default create<urlstoreProps>((set, get) => ({
 	deleteUrl: async (short_url: string) => {
 		try {
 			set({ isDeletingUrl: true });
-			await axiosIns.delete(`/url/delete/${short_url}`, {
+			const res = await axiosIns.delete(`/url/delete/${short_url}`, {
 				headers: {
 					Authorization: `Bearer ${get().userid}`,
 				},
+			});
+			const prev = get().myUrls;
+			const newD = {
+				...prev,
+				urls: prev?.urls.filter((url) => url.short_url !== short_url),
+				totalCount: prev?.totalCount ? prev.totalCount - 1 : 0,
+				totalPages: Math.ceil((prev?.totalCount - 1 || 0) / 10),
+			};
+			set({ myUrls: newD });
+			toast({
+				title: "Url deleted successfully",
+				description: res.data.message,
 			});
 		} catch (error) {
 			if (isAxiosError(error)) {

@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import PageNotFound from "./pages/PageNotFound";
 import useUrlstore from "./store/useUrlstore";
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
 	const { getTheme } = useThemestore();
@@ -20,6 +21,7 @@ function App() {
 	}, [getTheme]);
 
 	useEffect(() => {
+		console.log("User set", userId);
 		setUserid(userId);
 	}, [userId, setUserid]);
 
@@ -39,6 +41,7 @@ function App() {
 				/>
 				<Route path="*" element={<PageNotFound />} />
 			</Routes>
+			<Toaster/>
 		</>
 	);
 }

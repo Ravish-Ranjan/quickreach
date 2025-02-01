@@ -19,6 +19,7 @@ const urlSchema = new Schema(
 		short_url: {
 			type: String,
 			required: true,
+			unique: true,
 		},
 		owner: {
 			type: String,
