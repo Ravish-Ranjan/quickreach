@@ -3,13 +3,18 @@ import axiosIns from "@/lib/axios";
 import { isAxiosError } from "axios";
 import { toast } from "@/hooks/use-toast";
 
+interface clicksProps {
+	ipaddress: string;
+	createdAt: string;
+}
+
 interface urlProps {
 	_id: string;
 	original_url: string;
 	short_url: string;
 	createdAt: string;
 	updatedAt: string;
-	clicks: number;
+	clicks: clicksProps[];
 	owner: string;
 }
 
@@ -20,9 +25,16 @@ interface myUrlsProps {
 	urls: urlProps[];
 }
 
+interface analyticsProps {
+	original_url: string;
+	short_url: string;
+	clicks: clicksProps[];
+}
+
 interface urlstoreProps {
 	myUrls: myUrlsProps;
 	userid: null | undefined | string;
+	analytics: analyticsProps | null;
 	isGettingMyUrls: boolean;
 	isGettingAnalytics: boolean;
 	isAddingUrl: boolean;
@@ -79,7 +91,7 @@ export default create<urlstoreProps>((set, get) => ({
 					Authorization: `Bearer ${get().userid}`,
 				},
 			});
-			set({ myUrls: res.data });
+			set({ analytics: res.data });
 		} catch (error) {
 			if (isAxiosError(error)) {
 				console.log(

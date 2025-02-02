@@ -15,8 +15,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import useUrlstore from "@/store/useUrlstore";
 import { useAuth } from "@clerk/clerk-react";
-import { Link2, Trash } from "lucide-react";
+import { ChartSplineIcon, Link2, Trash } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
+import formatDate from "../utils/formatDate";
+import { useNavigate } from "react-router-dom";
 
 const limit = 10;
 
@@ -27,6 +29,7 @@ function DashBoard() {
 	const { isSignedIn, userId } = useAuth();
 	const [url, setUrl] = useState("");
 	const [isvalid, setIsvalid] = useState(true);
+	const navigate = useNavigate();
 	const origin = typeof window !== "undefined" ? window.location.origin : "";
 
 	const isValidUrl = (url: string) => {
@@ -64,7 +67,7 @@ function DashBoard() {
 		}
 	}, [getMyUrls, page, isSignedIn, userId, setUserid]);
 
-	if (isGettingMyUrls || !myUrls) return <div>Loading ... </div>;
+	if (isGettingMyUrls) return <div>Loading ... </div>;
 	return (
 		<div className="flex flex-col items-center w-full p-8">
 			{/* url form */}
@@ -98,65 +101,93 @@ function DashBoard() {
 				</div>
 			</form>
 			{/* display urls */}
-			<div className="w-full max-w-3xl mt-8">
+			<div className="grid w-full max-w-3xl gap-4 p-2 mt-8 overflow-y-auto shadow-2xl max-h-96 rounded-e-lg">
 				{myUrls.urls.length > 0 &&
 					myUrls.urls.map((url, i) => (
 						<div
 							key={url?.short_url}
-							className="flex items-center justify-start gap-2"
+							className="flex flex-wrap items-center justify-between gap-2 p-2 pr-6 border rounded sm:flex-nowrap"
 						>
-							<Small>{(page - 1) * limit + i + 1}.</Small>
-							<a
-								href={url?.original_url}
-								target="_blank"
-								rel="noreferrer"
-							>
-								<Button variant="link" className="p-0">
-									{origin}/{url?.short_url}
+							<div className="flex flex-wrap items-center justify-start gap-1 sm:flex-nowrap sm:gap-2">
+								<Small>{(page - 1) * limit + i + 1}.</Small>
+								<a
+									href={url?.original_url}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Button
+										variant="link"
+										className="p-0 h-fit"
+									>
+										{origin}/{url?.short_url}
+									</Button>
+								</a>
+								<Muted className="text-ellipsis">
+									( {url?.original_url} )
+								</Muted>
+							</div>
+							<div className="flex items-center justify-end gap-1">
+								<Muted>{formatDate(url?.createdAt).full}</Muted>
+								<Button
+									className="p-1 aspect-square"
+									title="Get url analytics"
+									variant="ghost"
+									onClick={() =>
+										navigate(`/analytics/${url?.short_url}`)
+									}
+								>
+									<ChartSplineIcon color="hsl(0,0%,40%)" />
 								</Button>
-							</a>
-							<Muted className="text-ellipsis">
-								( {url?.original_url} )
-							</Muted>
-							<Drawer>
-								<DrawerTrigger>
-									<Trash size={20} />
-								</DrawerTrigger>
-								<DrawerContent>
-									<DrawerHeader>
-										<DrawerTitle>
-											Are you absolutely sure to delete
-											the url?
-										</DrawerTitle>
-										<DrawerDescription>
-											<div className="flex items-center justify-center gap-2 my-2 sm:justify-start">
-												<Small className="text-zinc-50">
-													{origin}/{url?.short_url}
-												</Small>
-												<Muted className="text-ellipsis">
-													( {url?.original_url} )
-												</Muted>
-											</div>
-											This action cannot be undone.
-										</DrawerDescription>
-									</DrawerHeader>
-									<DrawerFooter className="sm:flex-row">
+								<Drawer>
+									<DrawerTrigger asChild>
 										<Button
-											onClick={() =>
-												handleDelete(url?.short_url)
-											}
-											disabled={isGettingMyUrls}
+											className="p-1 aspect-square"
+											variant="ghost"
+											title="Delete url"
 										>
-											Submit
+											<Trash
+												size={20}
+												color="hsl(0,50%,50%)"
+											/>
 										</Button>
-										<DrawerClose asChild>
-											<Button variant="outline">
-												Cancel
+									</DrawerTrigger>
+									<DrawerContent>
+										<DrawerHeader>
+											<DrawerTitle>
+												Are you absolutely sure to
+												delete the url?
+											</DrawerTitle>
+											<DrawerDescription>
+												<div className="flex items-center justify-center gap-2 my-2 sm:justify-start">
+													<Small className="text-zinc-900 dark:text-zinc-50">
+														{origin}/
+														{url?.short_url}
+													</Small>
+													<Muted className="text-ellipsis">
+														( {url?.original_url} )
+													</Muted>
+												</div>
+												This action cannot be undone.
+											</DrawerDescription>
+										</DrawerHeader>
+										<DrawerFooter className="sm:flex-row">
+											<Button
+												onClick={() =>
+													handleDelete(url?.short_url)
+												}
+												disabled={isGettingMyUrls}
+											>
+												Submit
 											</Button>
-										</DrawerClose>
-									</DrawerFooter>
-								</DrawerContent>
-							</Drawer>
+											<DrawerClose asChild>
+												<Button variant="outline">
+													Cancel
+												</Button>
+											</DrawerClose>
+										</DrawerFooter>
+									</DrawerContent>
+								</Drawer>
+							</div>
 						</div>
 					))}
 				{(!myUrls || myUrls.urls.length < 1) && (

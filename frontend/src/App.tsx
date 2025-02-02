@@ -36,7 +36,7 @@ function App() {
 					element={isSignedIn ? <Dashboard /> : <Navigate to="/" />}
 				/>
 				<Route
-					path="/analytics/:short-url"
+					path="/analytics/:short_url"
 					element={isSignedIn ? <Analytics /> : <Navigate to="/" />}
 				/>
 				<Route path="*" element={<PageNotFound />} />
