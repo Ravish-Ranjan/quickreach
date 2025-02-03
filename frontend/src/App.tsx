@@ -6,7 +6,6 @@ import Analytics from "./pages/Analytics";
 import { useThemestore } from "./store/useThemestore";
 import { useEffect } from "react";
 import { useAuth } from "@clerk/clerk-react";
-import PageNotFound from "./pages/PageNotFound";
 import useUrlstore from "./store/useUrlstore";
 import { Toaster } from "./components/ui/toaster";
 
@@ -21,7 +20,6 @@ function App() {
 	}, [getTheme]);
 
 	useEffect(() => {
-		console.log("User set", userId);
 		setUserid(userId);
 	}, [userId, setUserid]);
 
@@ -32,14 +30,13 @@ function App() {
 			<Routes>
 				<Route index path="/" element={<Home />} />
 				<Route
-					path="/dashboard"
+					path="page/dashboard"
 					element={isSignedIn ? <Dashboard /> : <Navigate to="/" />}
 				/>
 				<Route
-					path="/analytics/:short_url"
+					path="page/analytics/:short_url"
 					element={isSignedIn ? <Analytics /> : <Navigate to="/" />}
 				/>
-				<Route path="*" element={<PageNotFound />} />
 			</Routes>
 			<Toaster/>
 		</>

@@ -23,7 +23,7 @@ function Nav() {
 				<SignedIn>
 					<Button
 						variant="link"
-						onClick={() => navigate("/dashboard")}
+						onClick={() => navigate("/page/dashboard")}
 						className="hidden p-1 sm:grid"
 					>
 						Dashboard

@@ -23,7 +23,7 @@ export default function Home() {
 					<SignedIn>
 						<Button
 							variant="outline"
-							onClick={() => navigate("/dashboard")}
+							onClick={() => navigate("/page/dashboard")}
 						>
 							Go to Dashboard
 						</Button>

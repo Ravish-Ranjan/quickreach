@@ -59,6 +59,9 @@ export const getAnalytics = async (req, res) => {
 			{ short_url, owner: user },
 			"original_url clicks short_url"
 		);
+		url.clicks.sort(
+			(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+		);
 		if (!url) return res.status(404).json({ message: "url not found" });
 		return res.status(200).json(url);
 	} catch (error) {

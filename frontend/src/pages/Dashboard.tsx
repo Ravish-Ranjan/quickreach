@@ -1,4 +1,4 @@
-import { Muted, Small } from "@/components/Typography";
+import { Muted, Small, Large } from "@/components/Typography";
 import { Button } from "@/components/ui/button";
 import {
 	Drawer,
@@ -12,20 +12,29 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
 import useUrlstore from "@/store/useUrlstore";
 import { useAuth } from "@clerk/clerk-react";
-import { ChartSplineIcon, Link2, Trash } from "lucide-react";
+import {
+	ChartSplineIcon,
+	Copy,
+	Link2,
+	Trash,
+	ChevronFirst,
+	ChevronLeft,
+	ChevronRight,
+	ChevronLast,
+} from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import formatDate from "../utils/formatDate";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 const limit = 10;
 
 function DashBoard() {
 	const { myUrls, getMyUrls, isGettingMyUrls, setUserid, addUrl, deleteUrl } =
 		useUrlstore();
-	const [page] = useState(1);
+	const [page, setPage] = useState(1);
 	const { isSignedIn, userId } = useAuth();
 	const [url, setUrl] = useState("");
 	const [isvalid, setIsvalid] = useState(true);
@@ -60,6 +69,31 @@ function DashBoard() {
 		deleteUrl(short_url);
 	};
 
+	const handleCopyClick = async (text: string) => {
+		try {
+			await navigator.clipboard.writeText(text);
+		} catch (err) {
+			console.error("Failed to copy text: ", err);
+		}
+	};
+
+	const renderPageButtons = () => {
+		const buttons = [];
+		for (let i = 1; i <= (myUrls?.totalPages ?? 1); i++) {
+			buttons.push(
+				<Button
+					key={i}
+					variant={myUrls?.currentPage == i ? "default" : "outline"}
+					onClick={() => setPage(i)}
+					className="mx-1"
+				>
+					{i}
+				</Button>
+			);
+		}
+		return buttons;
+	};
+
 	useEffect(() => {
 		if (isSignedIn) {
 			setUserid(userId);
@@ -69,10 +103,12 @@ function DashBoard() {
 
 	if (isGettingMyUrls) return <div>Loading ... </div>;
 	return (
-		<div className="flex flex-col items-center w-full p-8">
+		<div className="flex flex-col items-center w-full gap-4 p-8">
 			{/* url form */}
-			<form className="w-full max-w-3xl" onSubmit={handleSubmit}>
-				<Label htmlFor="url">Enter a url to make it short</Label>
+			<form className="w-full max-w-4xl" onSubmit={handleSubmit}>
+				<Label htmlFor="url" className="text-lg">
+					Enter a url to make it short
+				</Label>
 				<div
 					className={`flex items-start justify-center gap-2 flex-1 flex-wrap sm:flex-nowrap sm:justify-between`}
 				>
@@ -101,47 +137,66 @@ function DashBoard() {
 				</div>
 			</form>
 			{/* display urls */}
-			<div className="grid w-full max-w-3xl gap-4 p-2 mt-8 overflow-y-auto shadow-2xl max-h-96 rounded-e-lg">
+			<Large className="max-w-4xl mt-8">Your urls</Large>
+			<div className="grid w-full max-w-4xl gap-4 p-2 rounded-lg shadow-2xl">
 				{myUrls.urls.length > 0 &&
 					myUrls.urls.map((url, i) => (
 						<div
 							key={url?.short_url}
-							className="flex flex-wrap items-center justify-between gap-2 p-2 pr-6 border rounded sm:flex-nowrap"
+							className="flex flex-wrap items-center justify-between gap-2 p-2 border rounded sm:flex-nowrap"
 						>
-							<div className="flex flex-wrap items-center justify-start gap-1 sm:flex-nowrap sm:gap-2">
+							<div className="flex flex-wrap items-center justify-start w-full gap-1 sm:w-2/3 sm:flex-nowrap sm:gap-2">
 								<Small>{(page - 1) * limit + i + 1}.</Small>
 								<a
 									href={url?.original_url}
 									target="_blank"
 									rel="noreferrer"
+									className="overflow-hidden w-fit sm:w-1/2 text-ellipsis whitespace-nowrap"
 								>
 									<Button
 										variant="link"
-										className="p-0 h-fit"
+										className="flex justify-start w-full p-0 overflow-hidden h-fit text-ellipsis whitespace-nowrap"
 									>
 										{origin}/{url?.short_url}
 									</Button>
 								</a>
-								<Muted className="text-ellipsis">
+								<Muted className="overflow-hidden w-fit sm:w-1/2 text-ellipsis whitespace-nowrap">
 									( {url?.original_url} )
 								</Muted>
 							</div>
-							<div className="flex items-center justify-end gap-1">
+							<div className="flex items-center justify-end gap-2">
 								<Muted>{formatDate(url?.createdAt).full}</Muted>
 								<Button
-									className="p-1 aspect-square"
+									title="Copy short url"
+									variant="ghost"
+									className="p-0 px-1"
+									onClick={() => {
+										handleCopyClick(
+											`${origin}/${url.short_url}`
+										);
+										toast({
+											title: "Url copied to clipboard",
+										});
+									}}
+								>
+									<Copy />
+								</Button>
+								<Button
+									className="p-0 px-1"
 									title="Get url analytics"
 									variant="ghost"
 									onClick={() =>
-										navigate(`/analytics/${url?.short_url}`)
+										navigate(
+											`/page/analytics/${url?.short_url}`
+										)
 									}
 								>
-									<ChartSplineIcon color="hsl(0,0%,40%)" />
+									<ChartSplineIcon className="p-0" />
 								</Button>
 								<Drawer>
 									<DrawerTrigger asChild>
 										<Button
-											className="p-1 aspect-square"
+											className="p-0 px-1"
 											variant="ghost"
 											title="Delete url"
 										>
@@ -198,6 +253,45 @@ function DashBoard() {
 						</Muted>
 					</div>
 				)}
+			</div>
+			<div className="flex items-center justify-center mt-4 space-x-2">
+				<Button
+					onClick={() => setPage(1)}
+					disabled={myUrls?.currentPage == 1}
+					variant="outline"
+				>
+					<ChevronFirst />
+				</Button>
+				<Button
+					onClick={() =>
+						setPage(
+							parseInt(myUrls?.currentPage?.toString() ?? "0") - 1
+						)
+					}
+					disabled={myUrls?.currentPage == 1}
+					variant="outline"
+				>
+					<ChevronLeft />
+				</Button>
+				{renderPageButtons()}
+				<Button
+					onClick={() =>
+						setPage(
+							parseInt(myUrls?.currentPage?.toString() ?? "0") + 1
+						)
+					}
+					disabled={myUrls?.currentPage == (myUrls?.totalPages ?? 1)}
+					variant="outline"
+				>
+					<ChevronRight />
+				</Button>
+				<Button
+					onClick={() => setPage(myUrls?.totalPages ?? 1)}
+					disabled={myUrls?.currentPage == (myUrls?.totalPages ?? 1)}
+					variant="outline"
+				>
+					<ChevronLast />
+				</Button>
 			</div>
 		</div>
 	);
