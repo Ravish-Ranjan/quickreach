@@ -1,4 +1,4 @@
-import { Link } from "lucide-react";
+import { Unlink } from "lucide-react";
 import { H4 } from "@/components/Typography";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ function Nav() {
 				onClick={() => navigate("/")}
 				title="go to homepage"
 			>
-				<Link strokeWidth={2} />
+				<Unlink strokeWidth={2} />
 				<H4>QuickReach</H4>
 			</div>
 			<div className="flex items-center gap-2">

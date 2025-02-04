@@ -28,6 +28,7 @@ import { FormEvent, useEffect, useState } from "react";
 import formatDate from "../utils/formatDate";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import Loading from "@/components/loading"
 
 const limit = 10;
 
@@ -67,7 +68,10 @@ function DashBoard() {
 
 	const handleDelete = (short_url: string) => {
 		deleteUrl(short_url);
-		getMyUrls(page);
+		if (myUrls.urls.length === 1) {
+			setPage(page - 1);
+			getMyUrls(page);
+		}
 	};
 
 	const handleCopyClick = async (text: string) => {
@@ -112,7 +116,7 @@ function DashBoard() {
 		}
 	}, [getMyUrls, page, isSignedIn, userId, setUserid]);
 
-	if (isGettingMyUrls) return <div>Loading ... </div>;
+	if (isGettingMyUrls) return <Loading />;
 	return (
 		<div className="flex flex-col items-center w-full gap-4 p-8">
 			{/* url form */}
@@ -149,7 +153,7 @@ function DashBoard() {
 			</form>
 			{/* display urls */}
 			<Large className="max-w-4xl mt-8">Your urls</Large>
-			<div className="grid w-full max-w-4xl gap-4 p-2 rounded-lg shadow-2xl">
+			<div className="justify-start w-full max-w-4xl gap-4 p-2 rounded-lg shadow-2xl felx felx-col h-96">
 				{myUrls.urls.length > 0 &&
 					myUrls.urls.map((url, i) => (
 						<div

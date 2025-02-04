@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import useUrlstore from "./store/useUrlstore";
 import { Toaster } from "./components/ui/toaster";
+import Footer from "./components/footer";
+import PageNotFound from "./pages/PageNotFound";
 
 function App() {
 	const { getTheme } = useThemestore();
@@ -37,8 +39,10 @@ function App() {
 					path="page/analytics/:short_url"
 					element={isSignedIn ? <Analytics /> : <Navigate to="/" />}
 				/>
+				<Route path="*" element={<PageNotFound />} />
 			</Routes>
-			<Toaster/>
+			<Footer />
+			<Toaster />
 		</>
 	);
 }

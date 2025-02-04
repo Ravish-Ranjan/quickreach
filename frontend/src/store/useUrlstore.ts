@@ -179,9 +179,14 @@ export default create<urlstoreProps>((set, get) => ({
 				...prev,
 				urls: prev?.urls.filter((url) => url.short_url !== short_url),
 				totalCount: prev?.totalCount ? prev.totalCount - 1 : 0,
-				totalPages: Math.ceil((prev?.totalCount - 1 || 0) / 10),
+				totalPages: Math.ceil(
+					(prev?.totalCount ? prev.totalCount - 1 : 0) / 10
+				),
 			};
 			set({ myUrls: newD });
+			if (get().myUrls.currentPage > get().myUrls.totalPages) {
+				get().getMyUrls(get().myUrls.totalPages);
+			}
 			toast({
 				title: "Url deleted successfully",
 				description: res.data.message,

@@ -10,7 +10,12 @@ function ToggleTheme() {
 		else if (theme === "system") setTheme("light");
 	};
 	return (
-		<Button variant="ghost" onClick={handleChangeTheme} className="p-1">
+		<Button
+			variant="ghost"
+			onClick={handleChangeTheme}
+			className="p-1"
+			title={`${theme} color theme`}
+		>
 			{theme === "dark" ? (
 				<Moon />
 			) : theme === "light" ? (

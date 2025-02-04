@@ -5,6 +5,8 @@ import PageNotFound from "./PageNotFound";
 import { H2, Muted, Small, H3 } from "@/components/Typography";
 import { Button } from "@/components/ui/button";
 import formatDate from "@/utils/formatDate";
+import Loading from "@/components/loading"
+
 
 function Analytics() {
 	const { short_url } = useParams();
@@ -13,16 +15,15 @@ function Analytics() {
 	const origin = typeof window !== "undefined" ? window.location.origin : "";
 
 	useEffect(() => {
-		console.log("short_url", short_url,userid);
 		if (short_url && userid) {
 			getAnalytics(short_url);
 		}
 	}, [short_url, userid, getAnalytics]);
 
 	if (!short_url) return <PageNotFound />;
-	if (isGettingAnalytics) return <div className="container">Loading...</div>;
+	if (isGettingAnalytics) return <Loading />;
 	return (
-		<div className="container flex flex-col items-start max-w-3xl gap-2 p-8">
+		<div className="container flex flex-col items-start max-w-4xl gap-2 p-8">
 			<H2>Analytics</H2>
 			<div className="grid">
 				<Small className="text-lg">
@@ -41,8 +42,11 @@ function Analytics() {
 					</div>
 				</Muted>
 			</div>
-			<H3 className="mt-6">Clicks</H3>
-			<div className="flex flex-col w-full gap-2 overflow-y-auto rounded max-h-96">
+			<div className="flex items-center justify-between w-full gap-2 mt-8 mb-4">
+				<H3>Clicks</H3>
+				<Muted>total clicks : {analytics?.clicks.length}</Muted>
+			</div>
+			<div className="flex flex-col w-full gap-2 overflow-y-auto rounded h-96">
 				{analytics && analytics.clicks.length > 0 ? (
 					analytics?.clicks.map((val, i) => (
 						<div

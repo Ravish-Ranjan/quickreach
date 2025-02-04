@@ -14,7 +14,6 @@ export const handleReRoute = async (req, res) => {
 		if (!url) return res.status(404).json({ message: "url not found" });
 
 		const clickInfo = { ipaddress: req.ip };
-		console.log(clickInfo);
 
 		await Url.findOneAndUpdate(
 			{ short_url },
@@ -94,7 +93,7 @@ export const createUrl = async (req, res) => {
 			newShortUrl = extractor(original_url).join("-");
 			const nanoid = customAlphabet(
 				"abcdefghijklmnopqrstuvwxyz0123456789",
-				3
+				4
 			);
 			newShortUrl += "-" + nanoid();
 			const prevcount = await Url.find({
