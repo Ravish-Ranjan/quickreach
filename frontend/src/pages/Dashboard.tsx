@@ -67,13 +67,24 @@ function DashBoard() {
 
 	const handleDelete = (short_url: string) => {
 		deleteUrl(short_url);
+		getMyUrls(page);
 	};
 
 	const handleCopyClick = async (text: string) => {
 		try {
 			await navigator.clipboard.writeText(text);
-		} catch (err) {
-			console.error("Failed to copy text: ", err);
+			toast({
+				title: "Short Url copied to clipboard",
+				description: text,
+			});
+		} catch (error) {
+			toast({
+				title: "Error copying text to clipbard",
+				description: `${
+					(error as Error).message
+				}. Check if clipbard is disabled for this site`,
+				variant: "destructive",
+			});
 		}
 	};
 
@@ -170,14 +181,11 @@ function DashBoard() {
 									title="Copy short url"
 									variant="ghost"
 									className="p-0 px-1"
-									onClick={() => {
+									onClick={() =>
 										handleCopyClick(
-											`${origin}/${url.short_url}`
-										);
-										toast({
-											title: "Url copied to clipboard",
-										});
-									}}
+											`${origin}/${url?.short_url}`
+										)
+									}
 								>
 									<Copy />
 								</Button>
@@ -254,6 +262,7 @@ function DashBoard() {
 					</div>
 				)}
 			</div>
+			{/* pagination */}
 			<div className="flex items-center justify-center mt-4 space-x-2">
 				<Button
 					onClick={() => setPage(1)}
