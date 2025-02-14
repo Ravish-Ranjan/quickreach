@@ -1,15 +1,15 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import Nav from "./components/nav";
+const Nav = React.lazy(() => import("./components/nav"));
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import { useThemestore } from "./store/useThemestore";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import useUrlstore from "./store/useUrlstore";
 import { Toaster } from "./components/ui/toaster";
-import Footer from "./components/footer";
-import PageNotFound from "./pages/PageNotFound";
+const Footer = React.lazy(() => import("./components/footer"));
+const PageNotFound = React.lazy(() => import("./pages/PageNotFound"));
 
 function App() {
 	const { getTheme } = useThemestore();

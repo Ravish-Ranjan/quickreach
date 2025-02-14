@@ -1,9 +1,10 @@
+import { lazy } from "react";
 import { Unlink } from "lucide-react";
 import { H4 } from "@/components/Typography";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
-import ModeToggle from "./mode-toggle";
-import Userbutton from "./userbutton";
+const ModeToggle = lazy(() => import("./mode-toggle"));
+const Userbutton = lazy(() => import("./userbutton"));
 import { useNavigate } from "react-router-dom";
 
 function Nav() {

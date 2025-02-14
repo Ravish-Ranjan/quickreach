@@ -1,12 +1,11 @@
 import useUrlstore from "@/store/useUrlstore";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import PageNotFound from "./PageNotFound";
+const PageNotFound = React.lazy(() => import("./PageNotFound"));
 import { H2, Muted, Small, H3 } from "@/components/Typography";
 import { Button } from "@/components/ui/button";
 import formatDate from "@/utils/formatDate";
-import Loading from "@/components/loading"
-
+const Loading = React.lazy(() => import("@/components/loading"));
 
 function Analytics() {
 	const { short_url } = useParams();

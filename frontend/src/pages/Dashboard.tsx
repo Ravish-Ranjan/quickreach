@@ -1,3 +1,4 @@
+import { FormEvent, useEffect, useState, lazy } from "react";
 import { Muted, Small, Large } from "@/components/Typography";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,11 +25,10 @@ import {
 	ChevronRight,
 	ChevronLast,
 } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
 import formatDate from "../utils/formatDate";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import Loading from "@/components/loading"
+const Loading = lazy(() => import("@/components/loading"));
 
 const limit = 10;
 
